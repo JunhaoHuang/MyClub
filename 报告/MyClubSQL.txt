@@ -1,0 +1,141 @@
+CREATE DATABASE myclub;
+
+
+
+CREATE TABLE account (
+	UserID VARCHAR(10) PRIMARY KEY,
+	AccountNum VARCHAR(12) NOT NULL,
+	Password VARCHAR(20) NOT NULL,
+
+	UserType ENUM('Admin','User') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE admin (
+	UserID VARCHAR(10) PRIMARY KEY,
+	AccountNum VARCHAR(12) NOT NULL,
+	Password VARCHAR(20) NOT NULL,
+
+	UserType ENUM('Admin','User') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE  user (
+	UserID VARCHAR(10) PRIMARY KEY,
+	UserName VARCHAR(20) NOT NULL,
+	Sex ENUM('Male','Female') DEFAULT NULL,
+	PhoneNumber VARCHAR(11) NOT NULL,
+	School VARCHAR(20) NOT NULL,
+	StudentID VARCHAR(10) NOT NULL,
+	Name VARCHAR(20) NOT NULL,
+	HeadPicture VARCHAR(30) DEFAULT NULL,
+	FOREIGN KEY (UserID) REFERENCES account (UserID)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE  club (
+
+	ClubID VARCHAR(10) PRIMARY KEY,
+	ClubName VARCHAR(20) NOT NULL,
+	ClubType ENUM('Sport','Art','Welfare','Science','Hobby','Other') NOT NULL,
+	School VARCHAR(20) NOT NULL,
+	Status ENUM('Pending','Pass','Fail') NOT NULL,
+	FeesStatus TINYINT(1) NOT NULL,
+	PerFees INT NOT NULL DEFAULT '0',
+	CreateDate DATE NOT NULL,
+	About TEXT,
+	ClubLogo VARCHAR(30) DEFAULT NULL
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE  clubmemberinfo (
+
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	ClubID VARCHAR(10),
+	UserID VARCHAR(10),
+
+	Status ENUM('Pending','Pass','Fail') NOT NULL,
+	PayStatus ENUM('NotPaid','Paid','NoFees') NOT NULL,
+	Position ENUM('President','VicePresident','Minister','ViceMinister','Member') NOT NULL,
+	JoinTime DATE NOT NULL,
+	FOREIGN KEY (ClubID) REFERENCES club (ClubID),
+	FOREIGN KEY (UserID) REFERENCES account (UserID)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE  clubfeesinfo (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	ClubID VARCHAR(10) NOT NULL,
+	UserID VARCHAR(10),
+	Fees FLOAT NOT NULL,
+	Time DATE NOT NULL,
+	FeesType ENUM('Income','Expense') NOT NULL,
+	Remarks TEXT,
+ 	FOREIGN KEY (ClubID) REFERENCES club (ClubID),
+	FOREIGN KEY (UserID) REFERENCES account (UserID)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE  activity (
+
+	ActivityID VARCHAR(10) PRIMARY KEY,
+	ClubID VARCHAR(10) NOT NULL,
+	ActivityName VARCHAR(60) NOT NULL,
+	ActivityLogo VARCHAR(30) DEFAULT NULL,
+	ActivityType ENUM('Sport','Art','Welfare','Sience','Hobby','Other') NOT NULL,
+
+	Details text,
+
+	ActivityStatus ENUM('Operable','Inoperable','Overdue') NOT NULL,
+	Location VARCHAR(40) NOT NULL,
+	ActivityStartTime DATETIME NOT NULL,
+	ActivityEndTime DATETIME NOT NULL,
+
+	SignUpSartTime DATETIME NOT NULL,
+	SignUpEndTime DATETIME NOT NULL,
+	LowerLimit INT(11) NOT NULL DEFAULT '0',
+	UpperLimit INT(11) NOT NULL DEFAULT '0',
+	FOREIGN KEY (ClubID) REFERENCES club (ClubID)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE  signupinfo (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	ActivityID VARCHAR(10) NOT NULL,
+	UserID VARCHAR(10) NOT NULL,
+	Status ENUM('Pending','Pass','Fail') NOT NULL,
+	Experience TEXT,
+
+	Comment TEXT,
+	SelfEvaluation TEXT,
+	Time DATETIME NOT NULL,
+	FOREIGN KEY (ActivityID) REFERENCES activity (ActivityID),
+	FOREIGN KEY (UserID) REFERENCES account (UserID)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE  information (
+	InforID INT PRIMARY KEY,
+	UserID VARCHAR(10),
+	InfoContent TEXT NOT NULL,
+	Time DATETIME NOT NULL,
+
+	SourceID VARCHAR(10) NOT NULL,
+	InfoType ENUM('Club','Activity','Admin') NOT NULL,
+	FOREIGN KEY (UserID) REFERENCES user (UserID)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
